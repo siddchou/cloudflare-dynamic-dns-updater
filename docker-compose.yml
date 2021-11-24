@@ -1,0 +1,12 @@
+version: '2'
+services:
+  cloudflare-ddns-update:
+    container_name: cloudflare-ddns-update
+    image: cloudflare-ddns-update:latest
+    ports:
+      - 8080:8888
+    networks:
+      - spring-cloud-network
+networks:
+  spring-cloud-network:
+    driver: bridge
