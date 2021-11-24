@@ -8,10 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class UpdaterService {
@@ -34,12 +31,12 @@ public class UpdaterService {
         logger.info("DNS Items to be updated  {}",items);
         List<Result> idToBeUpdated= filterIds(dnsRecords,items);
         logger.info("ID to be updated  {}",idToBeUpdated);
-        HashMap<String, Request> updateRequestJson= createUpdateRequest(idToBeUpdated);
+        Map<String, Request> updateRequestJson= createUpdateRequest(idToBeUpdated);
         if(updateRequestJson.isEmpty()){
-            logger.info("Ip change records found {}");
+            logger.info("NO IP change records found");
             return false;
         }else{
-            logger.info("IP address changed for records {}",updateRequestJson);
+            logger.info("Will be trying to change the IP for records {}",updateRequestJson);
            return  cloudFlareService.makeApiCallToUpdateDNS(updateRequestJson);
         }
 
@@ -50,12 +47,12 @@ public class UpdaterService {
 
         items.forEach(
                 item -> {
-                    Result record = dnsRecords.stream()
+                    Result result = dnsRecords.stream()
                             .filter(dnsRecord -> item.equals(dnsRecord.getName()))
                             .findAny()
                             .orElse(null);
-                    if (record!=null){
-                        resultList.add(record);
+                    if (result!=null){
+                        resultList.add(result);
                     }
                 }
         );
@@ -63,8 +60,8 @@ public class UpdaterService {
         return resultList;
     }
 
-    private HashMap<String,Request> createUpdateRequest(List<Result> resultList) {
-        HashMap<String,Request> requestMap=new HashMap<>();
+    private Map<String,Request> createUpdateRequest(List<Result> resultList) {
+        Map<String,Request> requestMap=new HashMap<>();
         try {
             String publicIp=publicIpAddrService.fetchPublicIpaddress();
             resultList.forEach(
@@ -72,7 +69,7 @@ public class UpdaterService {
                         logger.info("Existing IP Address for record id {} , ip {}",result.getId(),result.getContent());
                         if(!result.getContent().equalsIgnoreCase(publicIp)){
                             logger.info("Different IP found for record id {} , name {}",result.getId(),result.getName());
-                            Request request=new Request(result.getType(),result.getName(),publicIp,result.getTtl(),result.getProxied());
+                            Request request=new Request(result.getType(),result.getName(),publicIp,result.getTtl(),result.isProxied());
                             requestMap.put(result.getId(),request);
                         }
                     }

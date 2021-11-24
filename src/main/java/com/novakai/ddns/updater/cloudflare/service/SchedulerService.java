@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.util.concurrent.TimeUnit;
+
 @Service
 public class SchedulerService {
 
@@ -14,12 +16,9 @@ public class SchedulerService {
     @Autowired
     private UpdaterService updaterService;
 
-    @Scheduled(fixedDelayString = "${fixedDelay.in.milliseconds}")
+    @Scheduled(fixedDelayString = "${fixedDelay.in.minutes}" , timeUnit = TimeUnit.MINUTES)
     public void scheduleFixedRateWithInitialDelayTask() {
-
-        long now = System.currentTimeMillis() / 1000;
-        System.out.println(
-                "Fixed rate task with one second initial delay - " + now);
+        logger.info("Starting scheduler <-----------  For updating DNS settings      ------->");
         if(updaterService.processForDNSRecordUpdate()){
         logger.info("SUCCESS record has been updated to new IP");
         }else{

@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -26,20 +25,20 @@ public class CommonRestController {
     private CloudFlareService cloudFlareService;
 
     @GetMapping("/fetchIpAddress")
-    public String  fetchIpAddress () throws IOException {
+    public String  fetchIpAddress ()  {
         return publicIpAddrService.fetchPublicIpaddress();
 
     }
 
     @GetMapping("/fetchDNSRecord")
-    public List<Result> fetchDNSRecord () throws IOException {
+    public List<Result> fetchDNSRecord ()  {
         return cloudFlareService.fetchDNSARecords();
 
     }
 
 
     @GetMapping("/updateDNSRecord")
-    public Boolean updateDNSRecord () throws IOException {
+    public Boolean updateDNSRecord ()  {
         return updaterService.processForDNSRecordUpdate();
 
     }
